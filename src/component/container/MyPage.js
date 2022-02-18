@@ -212,7 +212,7 @@ class MyPage extends Component {
 
         let tmp = []
         tmpData.forEach(element => {
-            tmp.push(<TaskBox title={element.title} point={element.point} time={element.time_required} content={element.contents} BtnStatus={2} />);
+            tmp.push(<TaskBox id={`OrderConfirmation-${element.id}`} title={element.title} point={element.point} time={element.time_required} content={element.contents} BtnStatus={2} clickedFn={this.tasksCompletion.bind(this)} />);
         })
         this.setState({
             ordersConfirmationList: tmp
@@ -255,7 +255,7 @@ class MyPage extends Component {
         await tasksRef.doc(String(id)).set({
             id: id,
             title: title,
-            point: point,
+            point: Number(point),
             owner_uid: this.props.match.params.uid,
             time_required: time,
             contents: detail,
@@ -267,24 +267,19 @@ class MyPage extends Component {
         //-------------------------------------------------//  firebase  //-------------------------------------------------//
     
         alert('募集を開始しました');
-        
-        document.querySelector('#inputTitle').value = "";
-        document.querySelector('#inputPoint').value = "";
-        document.querySelector('#inputTime').value = "";
-        document.querySelector('#inputDetail').value = "";
+
+        window.location.reload();
     }
 
     async taskDetail(element) {
         document.querySelector('body').classList.add('on');
 
-        console.log(element.target.id.split('-')[2]);
         //-------------------------------------------------//  firebase  //-------------------------------------------------//
         let tasksRef = firebase.firestore().collection('tasks');
         await tasksRef.where('id', '==', Number(element.target.id.split('-')[2]))
         .get()
         .then(querySnapshot => {
             querySnapshot.forEach(doc => {
-                console.log(doc.data().mail);
                 this.setState({
                     backEmail: doc.data().mail
                 });
@@ -295,6 +290,54 @@ class MyPage extends Component {
     }
     taskDetailClose() {
         document.querySelector('body').classList.remove('on');
+    }
+
+    async tasksCompletion(element) {
+        let contractorUid;
+        let contractorPoint;
+        let getPoint;
+        //-------------------------------------------------//  firebase  //-------------------------------------------------//
+        let usersRef = await firebase.firestore().collection('users');
+        let tasksRef = await firebase.firestore().collection('tasks');
+        
+        await tasksRef.where('id', '==', Number(element.target.id.split('-')[2]))
+        .get()
+        .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+                contractorUid = doc.data().contractor;
+                getPoint = doc.data().point;
+            });
+        })
+        .then(() => console.log('firebase ok'))
+        .catch(error => console.log(error));
+
+        if(contractorUid == "") {
+            alert('まだ助っ人希望者が現れていません');
+            return;
+        }
+
+        await usersRef.doc(contractorUid).get()
+        .then(doc => {
+            console.log(doc.data());
+            contractorPoint = doc.data().point;
+        })
+        .catch(error => console.log(error));
+        
+        await usersRef.doc(contractorUid).update({
+            point: Number(contractorPoint)+Number(getPoint)
+        })
+        .then(() => console.log('firebase ok'))
+        .catch(error => console.log(error));
+
+        await tasksRef.doc(element.target.id.split('-')[2])
+        .delete()
+        .then(() => console.log('firebase del'))
+        .catch(error => console.log(error));
+        //-------------------------------------------------//  firebase  //-------------------------------------------------//
+        
+        alert('完了しました');
+
+        window.location.reload();
     }
 
     openCard(element) {
@@ -326,8 +369,8 @@ class MyPage extends Component {
                     <CadeTitle id='taskOrder' onClick={this.openCard.bind(this)} ><ArrowImg src={ArrowImgData} className='cad-img' />タスクを発注する</CadeTitle>
                     <CadeContent className='cade' >
                         <Input type="text" placeholder='タイトル' id='inputTitle' />
-                        <Input type="text" placeholder='支払ポイント' id='inputPoint' />
-                        <Input type="text" placeholder='推定時間' id='inputTime' />
+                        <Input type="number" placeholder='支払ポイント' id='inputPoint' />
+                        <Input type="number" placeholder='推定時間' id='inputTime' />
                         <TextBox type="text" placeholder='タスクの詳細' id='inputDetail' />
 
                         <Btn text="募集する" clickedFn={this.ordertask.bind(this)} />

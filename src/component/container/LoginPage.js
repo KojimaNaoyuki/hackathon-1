@@ -5,6 +5,15 @@ import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth';
 
 import Btn from '../presentational/atoms/Btn';
+import HelpMan from '../../img/HelpMan.svg'
+import Work from '../../img/Work.svg';
+import ManAll from '../../img/ManAll.svg';
+
+const Wrap = styled.div`
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+`;
 
 const InputFrom = styled.section`
     position: absolute;
@@ -21,6 +30,43 @@ const Input = styled.input`
     width: 80%;
     outline: none;
     border-radius: 3px;
+    font-size: 15px;
+`;
+
+const HelpManImg = styled.img`
+    width: 140px;
+    position: absolute;
+    top: 55px;
+    left: 70px;
+    opacity: .6;
+`;
+const WorkImg = styled.img`
+    width: 140px;
+    position: absolute;
+    bottom: 80px;
+    left: 40px;
+    opacity: .6;
+`;
+const ManAllImg = styled.img`
+    width: 140px;
+    position: absolute;
+    bottom: 300px;
+    right: -40px;
+    opacity: .6;
+`;
+
+const Mssage = styled.h2`
+    width: 100%;
+    position: absolute;
+    top: 22%;
+    left: 0;
+    font-size: 19px;
+    color: #4599d7;
+    font-weight: bold;
+    text-align: center;
+`;
+const Span = styled.span`
+    color: #c3af4e;
 `;
 
 const MarginS = styled.div`
@@ -38,8 +84,8 @@ class LoginPage extends Component {
         let email = document.querySelector('#inputEmail').value;
         let password = document.querySelector('#inputPass').value;
 
-        if(!email || !password) {
-            alert('メールアドレスまたはパスワードが入力されていません。');
+        if(!email || !password || !userName) {
+            alert('メールアドレスまたはパスワードまたはユーザーネームが入力されていません。');
             return;
         }
 
@@ -137,11 +183,16 @@ class LoginPage extends Component {
 
     render() {
         return(
-            <>
+            <Wrap>
+                <HelpManImg src={HelpMan} />
+                <WorkImg src={Work} />
+                <ManAllImg src={ManAll} />
+
+                <Mssage>忙しい<Span>時</Span>から、暇な<Span>時</Span>から解法します</Mssage>
                 <InputFrom>
                     <Input type="text" placeholder="ユーザーネーム" id='inputUserName'/>
-                    <Input type="text" placeholder="メールアドレス" id='inputEmail'/>
-                    <Input type="text" placeholder="パスワード" id='inputPass'/>
+                    <Input type="email" placeholder="メールアドレス" id='inputEmail'/>
+                    <Input type="password" placeholder="パスワード" id='inputPass'/>
 
                     <MarginS />
 
@@ -149,7 +200,7 @@ class LoginPage extends Component {
                     <MarginS />
                     <Btn text="アカウント新規作成" clickedFn={this.createUser.bind(this)}></Btn>
                 </InputFrom>
-            </>
+            </Wrap>
         );
     }
 }

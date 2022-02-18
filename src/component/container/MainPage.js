@@ -19,7 +19,7 @@ const ImgMan = styled.img`
     top: 10px;
     left: 15px;
     opacity: .8;
-    width: 72px;
+    width: 82px;
 `;
 const UerName = styled.h2`
     padding: 15px 0;
@@ -130,10 +130,23 @@ class MainPage extends Component {
         .catch(error => console.log(error));
 
         alert('応募が完了しました');
+
+        window.location.reload();
     }
 
     gotoMyPage() {
         this.props.history.push("/myPage/" + this.props.match.params.uid);
+    }
+
+    async logout() {
+        let confirmResult = window.confirm('ログアウトしますか？\n再度ログインが必要になります');
+        if(!confirmResult) {
+            return;
+        }
+        await firebase.auth().signOut().then(() => {
+            console.log('ログアウトしました');
+            this.props.history.push("/");
+        });
     }
 
     render() {
@@ -149,6 +162,8 @@ class MainPage extends Component {
                     <Btn text="タスクを発注する" clickedFn={this.gotoMyPage.bind(this)} />
                     <MarginS />
                     <Btn text="受注中のタスクを確認" clickedFn={this.gotoMyPage.bind(this)} />
+                    <MarginS />
+                    <Btn text="ログアウト" clickedFn={this.logout.bind(this)} />
                 </UserCade>
 
                 <TaskList>
