@@ -13,3 +13,38 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+/* //////////////////////////////////////////////////////////////////////////////// */
+
+.back-color-white {
+  background-color: #fff;
+}
+
+.cade {
+  display: none;
+}
+.cade-img {
+}
+.open .cade {
+  display: block;
+}
+.open .cad-img {
+  transform: rotate(90deg);
+  transition: all 0.3s;
+}
+
+.on .back {
+  background-color: black;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0.4;
+}
+.back-content {
+  display: none;
+}
+.on .back-content {
+  display: block;
+}

@@ -7,6 +7,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
 import LoginPage from './component/container/LoginPage';
 import MainPage from './component/container/MainPage';
+import MyPage from './component/container/MyPage';
 
 class App extends Component {
   constructor() {
@@ -32,6 +33,7 @@ class App extends Component {
         <Switch>
           <Route exact path='/'><LoginPage /></Route>
           <Route exact path='/mainApp/:uid'><MainPage /></Route>
+          <Route exact path='/myPage/:uid'><MyPage /></Route>
         </Switch>
       </BrowserRouter>
     );

@@ -108,11 +108,32 @@ class MainPage extends Component {
 
         let tmpContent = [];
         tmp.forEach(element => {
-            tmpContent.push(<TaskBox title={element.title} point={element.point} time={element.time_required} content={element.contents} />)
+            tmpContent.push(<TaskBox id={element.id} title={element.title} point={element.point} time={element.time_required} content={element.contents} BtnStatus={true} clickedFn={this.tasksApply.bind(this)} />)
         });
         this.setState({
             tasksList: tmpContent
         });
+    }
+
+    async tasksApply(element) {
+        if(!window.confirm("応募を完了してよろしいですか？")) {
+            return;
+        }
+
+        const tg = element.target.id.split('-')[1];
+
+        let tasksRef = firebase.firestore().collection("tasks");
+        await tasksRef.doc(tg).update({
+            contractor: this.props.match.params.uid
+        })
+        .then(() => console.log('firebase ok'))
+        .catch(error => console.log(error));
+
+        alert('応募が完了しました');
+    }
+
+    gotoMyPage() {
+        this.props.history.push("/myPage/" + this.props.match.params.uid);
     }
 
     render() {
@@ -125,9 +146,9 @@ class MainPage extends Component {
                     <UerName>{this.state.userName}</UerName>
                     <Point>ポイント&emsp;{this.state.userPoint}</Point>
 
-                    <Btn text="タスクを発注する" />
+                    <Btn text="タスクを発注する" clickedFn={this.gotoMyPage.bind(this)} />
                     <MarginS />
-                    <Btn text="受注中のタスクを確認" />
+                    <Btn text="受注中のタスクを確認" clickedFn={this.gotoMyPage.bind(this)} />
                 </UserCade>
 
                 <TaskList>

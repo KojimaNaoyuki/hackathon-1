@@ -41,14 +41,24 @@ const Content = styled.p`
 `;
 
 const TaskBox = (props) => {
+    let btn;
+    if(props.BtnStatus == true) {
+        btn = <Btn text="応募する" clickedFn={props.clickedFn} id={`btn-${props.id}`} />
+    } else if(props.BtnStatus == 2) {
+        btn = <Btn text="タスク完了" clickedFn={props.clickedFn} id={`btn-${props.id}`} />
+    } else if(props.BtnStatus == 3) {
+        btn = <Btn text="タスクを開始する" clickedFn={props.clickedFn} id={`btn-${props.id}`} />
+    }
+
     return(
-        <TaskBoxWrap>
+        <TaskBoxWrap id={props.id} >
             <ImgMan src={HelpManImg} />
             <Title>{props.title}</Title>
             <Point>ポイント&emsp;{props.point}</Point>
             <Time>推定時間&emsp;{props.time}時間</Time>
             <Content>{props.content}</Content>
-            <Btn text="応募する" />
+
+            {btn}
         </TaskBoxWrap>
     );
 }

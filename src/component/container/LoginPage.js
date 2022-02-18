@@ -34,7 +34,7 @@ class LoginPage extends Component {
 
     async createUser() {
         //アカウント新規登録
-
+        let userName = document.querySelector('#inputUserName').value;
         let email = document.querySelector('#inputEmail').value;
         let password = document.querySelector('#inputPass').value;
 
@@ -85,7 +85,19 @@ class LoginPage extends Component {
         await firebase.auth().onAuthStateChanged(user => {
             uid = user.uid;
         });
-        
+
+        let usersRef = firebase.firestore().collection('users');
+        await usersRef.doc(uid).set({
+            name: userName,
+            point: 1000,
+            uid: uid,
+            mail: email
+        })
+        .then(() => console.log('firebase ok'))
+        .catch(error => console.log(error));
+        //-------------------------------------------------//  firebase  //-------------------------------------------------//
+
+        //-------------------------------------------------//  firebase  //-------------------------------------------------//
         await firebase
         .auth()
         .signInWithEmailAndPassword(email, password)
@@ -127,6 +139,7 @@ class LoginPage extends Component {
         return(
             <>
                 <InputFrom>
+                    <Input type="text" placeholder="ユーザーネーム" id='inputUserName'/>
                     <Input type="text" placeholder="メールアドレス" id='inputEmail'/>
                     <Input type="text" placeholder="パスワード" id='inputPass'/>
 

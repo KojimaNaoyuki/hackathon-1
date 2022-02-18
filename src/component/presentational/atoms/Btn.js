@@ -18,7 +18,7 @@ const Btn = (props) => {
     `;
 
     return(
-        <BtnBox onClick={props.clickedFn}>
+        <BtnBox onClick={props.clickedFn} id={props.id}>
             {props.text}
         </BtnBox>
     );
