@@ -8,6 +8,9 @@ const TaskBoxWrap = styled.div`
     padding: 15px 15px;
     background-color: #FFF;
     text-align: center;
+    @media screen and (min-width:860px) {
+        width: 45%;
+    }
 `;
 const ImgMan = styled.img`
     position: absolute;

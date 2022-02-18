@@ -8,6 +8,7 @@ import ManImg from './../../img/Man.svg';
 import Btn from '../presentational/atoms/Btn';
 import ArrowImgData from './../../img/Arrow.svg';
 import TaskBox from '../presentational/atoms/TaskBox';
+import Loader from '../presentational/atoms/Loader';
 
 const UserCade = styled.section`
     padding: 20px 0;
@@ -21,6 +22,9 @@ const ImgMan = styled.img`
     left: 15px;
     opacity: .8;
     width: 72px;
+    @media screen and (min-width:860px) {
+        width: 120px;
+    }
 `;
 const UerName = styled.h2`
     padding: 15px 0;
@@ -43,6 +47,10 @@ const CadeTitle = styled.h3`
     font-weight: bold;
     color: #4599d7;
     background-color: #FFF;
+    &:hover {
+        opacity: 0.6;
+        cursor: pointer;
+    }
 `;
 const ArrowImg = styled.img`
     margin-right: 15px;
@@ -51,6 +59,12 @@ const ArrowImg = styled.img`
 const CadeContent = styled.div`
     padding: 0 0 10px;
     text-align: center;
+    max-width: 860px;
+    margin: 0 auto;
+`;
+const UserCadeInner = styled.div`
+    max-width: 460px;
+    margin: 0 auto;
 `;
 
 const Input = styled.input`
@@ -78,6 +92,15 @@ const TextBox = styled.textarea`
     font-size: 15px;
 `;
 
+const TaskListWrap = styled.div`
+    @media screen and (min-width:860px) {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+`;
+
 const Back = styled.div`
 `;
 const BackContent = styled.div`
@@ -96,6 +119,10 @@ const BackTitle = styled.h3`
     font-size: 15px;
     font-weight: bold;
     color: #4599d7;
+`;
+const BackInner = styled.div`
+    max-width: 560px;
+    margin: 0 auto;
 `;
 const BackSubTitle = styled.h3`
     margin: 0;
@@ -135,6 +162,7 @@ class MyPage extends Component {
             backEmail: '',
             ordersReceivedList: [],
             ordersConfirmationList: [],
+            loaderComponent: null
         }
     }
 
@@ -231,6 +259,8 @@ class MyPage extends Component {
             return;
         }
 
+        this._loaderOperation(true);
+
         //-------------------------------------------------//  firebase  //-------------------------------------------------//
         let usersRef = firebase.firestore().collection('users');
         await usersRef.doc(this.props.match.params.uid).update({
@@ -265,7 +295,9 @@ class MyPage extends Component {
         .then(() => console.log('firebase ok'))
         .catch(error => console.log(error));
         //-------------------------------------------------//  firebase  //-------------------------------------------------//
-    
+
+        this._loaderOperation(false);
+
         alert('募集を開始しました');
 
         window.location.reload();
@@ -296,6 +328,9 @@ class MyPage extends Component {
         let contractorUid;
         let contractorPoint;
         let getPoint;
+
+        this._loaderOperation(true);
+
         //-------------------------------------------------//  firebase  //-------------------------------------------------//
         let usersRef = await firebase.firestore().collection('users');
         let tasksRef = await firebase.firestore().collection('tasks');
@@ -312,6 +347,8 @@ class MyPage extends Component {
         .catch(error => console.log(error));
 
         if(contractorUid == "") {
+            this._loaderOperation(false);
+
             alert('まだ助っ人希望者が現れていません');
             return;
         }
@@ -334,7 +371,9 @@ class MyPage extends Component {
         .then(() => console.log('firebase del'))
         .catch(error => console.log(error));
         //-------------------------------------------------//  firebase  //-------------------------------------------------//
-        
+
+        this._loaderOperation(false);
+
         alert('完了しました');
 
         window.location.reload();
@@ -350,17 +389,32 @@ class MyPage extends Component {
         this.props.history.push("/MainApp/" + this.props.match.params.uid);
     }
 
+    _loaderOperation(status) {
+        //ローダーの表示設定
+        if(status) {
+            this.setState({
+                loaderComponent: <Loader />
+            });
+        } else {
+            this.setState({
+                loaderComponent: null
+            });
+        }
+    }
+
     render() {
         return(
             <>
                 <Header />
 
                 <UserCade>
-                    <ImgMan src={ManImg} />
-                    <UerName>{this.state.userName}</UerName>
-                    <Point>ポイント&emsp;{this.state.userPoint}</Point>
+                    <UserCadeInner>
+                        <ImgMan src={ManImg} />
+                        <UerName>{this.state.userName}</UerName>
+                        <Point>ポイント&emsp;{this.state.userPoint}</Point>
 
-                    <Btn text="戻る" clickedFn={this.gotoMainApp.bind(this)} />
+                        <Btn text="戻る" clickedFn={this.gotoMainApp.bind(this)} />
+                    </UserCadeInner>
                 </UserCade>
 
                 <MarginM />
@@ -380,26 +434,34 @@ class MyPage extends Component {
                 <Cade id='taskOrderConfirmation-wrap'>
                     <CadeTitle id='taskOrderConfirmation' onClick={this.openCard.bind(this)} ><ArrowImg src={ArrowImgData} className='cad-img' />発注中のタスクを確認</CadeTitle>
                     <CadeContent className='cade'>
-                        {this.state.ordersConfirmationList}
+                        <TaskListWrap>
+                            {this.state.ordersConfirmationList}
+                        </TaskListWrap>
                     </CadeContent>
                 </Cade>
 
                 <Cade id='ordersReceived-wrap'>
                     <CadeTitle id='ordersReceived' onClick={this.openCard.bind(this)} ><ArrowImg src={ArrowImgData} className='cad-img' />受注中のタスクを確認</CadeTitle>
                     <CadeContent className='cade'>
-                        {this.state.ordersReceivedList}
+                        <TaskListWrap>
+                            {this.state.ordersReceivedList}
+                        </TaskListWrap>
                     </CadeContent>
                 </Cade>
 
                 <Back className='back' />
                 <BackContent className='back-content'>
-                    <BackTitle>手伝って</BackTitle>
-                    <BackSubTitle>タスク発注者メールアドレス</BackSubTitle>
-                    <BackEmail>{this.state.backEmail}</BackEmail>
-                    <BackMs>発注者と連絡を取ってタスクを実施してください</BackMs>
+                    <BackInner>
+                        <BackTitle>手伝って</BackTitle>
+                        <BackSubTitle>タスク発注者メールアドレス</BackSubTitle>
+                        <BackEmail>{this.state.backEmail}</BackEmail>
+                        <BackMs>発注者と連絡を取ってタスクを実施してください</BackMs>
 
-                    <Btn text="戻る" clickedFn={this.taskDetailClose.bind(this)} />
+                        <Btn text="戻る" clickedFn={this.taskDetailClose.bind(this)} />
+                    </BackInner>
                 </BackContent>
+
+                {this.state.loaderComponent}
             </>
         );
     }

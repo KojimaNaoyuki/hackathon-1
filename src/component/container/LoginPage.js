@@ -8,11 +8,15 @@ import Btn from '../presentational/atoms/Btn';
 import HelpMan from '../../img/HelpMan.svg'
 import Work from '../../img/Work.svg';
 import ManAll from '../../img/ManAll.svg';
+import Loader from '../presentational/atoms/Loader';
 
 const Wrap = styled.div`
+    position: relative;
+    margin: 0 auto;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
+    max-width: 1160px;
 `;
 
 const InputFrom = styled.section`
@@ -22,6 +26,7 @@ const InputFrom = styled.section`
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
+    max-width: 660px;
 `;
 const Input = styled.input`
     margin-bottom: 20px;
@@ -51,7 +56,7 @@ const ManAllImg = styled.img`
     width: 140px;
     position: absolute;
     bottom: 300px;
-    right: -40px;
+    right: 0px;
     opacity: .6;
 `;
 
@@ -76,6 +81,10 @@ const MarginS = styled.div`
 class LoginPage extends Component {
     constructor() {
         super();
+
+        this.state = {
+            loaderComponent: null
+        }
     }
 
     async createUser() {
@@ -88,6 +97,8 @@ class LoginPage extends Component {
             alert('メールアドレスまたはパスワードまたはユーザーネームが入力されていません。');
             return;
         }
+
+        this._loaderOperation(true);
 
         let flag = true;
         //-------------------------------------------------//  firebase  //-------------------------------------------------//
@@ -121,9 +132,9 @@ class LoginPage extends Component {
         //-------------------------------------------------//  firebase  //-------------------------------------------------//
 
         if(!flag) {
+            alert('エラーが発生しました');
+            this._loaderOperation(false);
             return;
-        } else {
-            alert('アカウントが発行されました');
         }
 
         let uid = "";
@@ -148,10 +159,15 @@ class LoginPage extends Component {
         .auth()
         .signInWithEmailAndPassword(email, password)
         .then(() => {
+            this._loaderOperation(false);
+
+            alert('アカウントが発行されました');
             this.props.history.push("/mainApp/" + uid);
         })
         .catch(error => console.log(error));
         //-------------------------------------------------//  firebase  //-------------------------------------------------//
+
+        this._loaderOperation(false);
     }
 
     async login() {
@@ -165,6 +181,8 @@ class LoginPage extends Component {
             return;
         }
 
+        this._loaderOperation(true);
+
         let uid = "";
         //-------------------------------------------------//  firebase  //-------------------------------------------------//
         await firebase.auth().onAuthStateChanged(user => {
@@ -175,10 +193,26 @@ class LoginPage extends Component {
         .auth()
         .signInWithEmailAndPassword(email, password)
         .then(() => {
+            this._loaderOperation(false);
             this.props.history.push("/mainApp/" + uid);
         })
         .catch(error => console.log(error));
         //-------------------------------------------------//  firebase  //-------------------------------------------------//
+        
+        this._loaderOperation(false);
+    }
+
+    _loaderOperation(status) {
+        //ローダーの表示設定
+        if(status) {
+            this.setState({
+                loaderComponent: <Loader />
+            });
+        } else {
+            this.setState({
+                loaderComponent: null
+            });
+        }
     }
 
     render() {
@@ -188,7 +222,7 @@ class LoginPage extends Component {
                 <WorkImg src={Work} />
                 <ManAllImg src={ManAll} />
 
-                <Mssage>忙しい<Span>時</Span>から、暇な<Span>時</Span>から解法します</Mssage>
+                <Mssage>忙しい<Span>時</Span>、暇な<Span>時</Span>から解法します</Mssage>
                 <InputFrom>
                     <Input type="text" placeholder="ユーザーネーム" id='inputUserName'/>
                     <Input type="email" placeholder="メールアドレス" id='inputEmail'/>
@@ -200,6 +234,8 @@ class LoginPage extends Component {
                     <MarginS />
                     <Btn text="アカウント新規作成" clickedFn={this.createUser.bind(this)}></Btn>
                 </InputFrom>
+
+                {this.state.loaderComponent}
             </Wrap>
         );
     }

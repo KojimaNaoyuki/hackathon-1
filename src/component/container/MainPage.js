@@ -7,12 +7,19 @@ import Header from '../presentational/atoms/Header';
 import ManImg from '../../img/Man.svg';
 import Btn from '../presentational/atoms/Btn';
 import TaskBox from '../presentational/atoms/TaskBox';
+import Loader from '../presentational/atoms/Loader';
 
 const UserCade = styled.section`
     padding: 20px 0;
     position: relative;
     background-color: #FFF;
     text-align: center;
+    max-width: 860px;
+    margin: 0 auto;
+`;
+const UserCadeInner = styled.div`
+    max-width: 460px;
+    margin: 0 auto;
 `;
 const ImgMan = styled.img`
     position: absolute;
@@ -20,6 +27,9 @@ const ImgMan = styled.img`
     left: 15px;
     opacity: .8;
     width: 82px;
+    @media screen and (min-width:860px) {
+        width: 120px;
+    }
 `;
 const UerName = styled.h2`
     padding: 15px 0;
@@ -42,6 +52,22 @@ const TaskListTitle = styled.h3`
     background-color: #8DCFFF;
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
+    @media screen and (min-width:860px) {
+        padding: 10px 0;
+        width: 100%;
+        text-align: center;
+    }
+`;
+
+const TaskListWrap = styled.div`
+    @media screen and (min-width:860px) {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-wrap: wrap;
+        max-width: 860px;
+        margin: 20px auto;
+    }
 `;
 
 const MarginS = styled.div`
@@ -56,7 +82,8 @@ class MainPage extends Component {
             userName: "",
             userPoint: "",
             uid: "",
-            tasksList: []
+            tasksList: [],
+            loaderComponent: null
         }
     }
     
@@ -73,6 +100,7 @@ class MainPage extends Component {
             }
         });
         //-------------------------------------------------//  firebase  //-------------------------------------------------//
+
         this._displayUserData();
         this._displayTaskList();
     }
@@ -122,12 +150,18 @@ class MainPage extends Component {
 
         const tg = element.target.id.split('-')[1];
 
+        this._loaderOperation(true);
+
+        //-------------------------------------------------//  firebase  //-------------------------------------------------//
         let tasksRef = firebase.firestore().collection("tasks");
         await tasksRef.doc(tg).update({
             contractor: this.props.match.params.uid
         })
         .then(() => console.log('firebase ok'))
         .catch(error => console.log(error));
+        //-------------------------------------------------//  firebase  //-------------------------------------------------//
+
+        this._loaderOperation(false);
 
         alert('応募が完了しました');
 
@@ -149,27 +183,46 @@ class MainPage extends Component {
         });
     }
 
+    _loaderOperation(status) {
+        //ローダーの表示設定
+        if(status) {
+            this.setState({
+                loaderComponent: <Loader />
+            });
+        } else {
+            this.setState({
+                loaderComponent: null
+            });
+        }
+    }
+
     render() {
         return(
             <>
                 <Header />
                 
                 <UserCade>
-                    <ImgMan src={ManImg} />
-                    <UerName>{this.state.userName}</UerName>
-                    <Point>ポイント&emsp;{this.state.userPoint}</Point>
+                    <UserCadeInner>
+                        <ImgMan src={ManImg} />
+                        <UerName>{this.state.userName}</UerName>
+                        <Point>ポイント&emsp;{this.state.userPoint}</Point>
 
-                    <Btn text="タスクを発注する" clickedFn={this.gotoMyPage.bind(this)} />
-                    <MarginS />
-                    <Btn text="受注中のタスクを確認" clickedFn={this.gotoMyPage.bind(this)} />
-                    <MarginS />
-                    <Btn text="ログアウト" clickedFn={this.logout.bind(this)} />
+                        <Btn text="タスクを発注する" clickedFn={this.gotoMyPage.bind(this)} />
+                        <MarginS />
+                        <Btn text="受注中のタスクを確認" clickedFn={this.gotoMyPage.bind(this)} />
+                        <MarginS />
+                        <Btn text="ログアウト" clickedFn={this.logout.bind(this)} />
+                    </UserCadeInner>
                 </UserCade>
 
                 <TaskList>
                     <TaskListTitle>助っ人募集中タスク</TaskListTitle>
-                    {this.state.tasksList}
+                    <TaskListWrap>
+                        {this.state.tasksList}
+                    </TaskListWrap>
                 </TaskList>
+
+                {this.state.loaderComponent}
             </>
         );
     }
