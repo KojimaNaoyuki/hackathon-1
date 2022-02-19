@@ -163,9 +163,9 @@ class MainPage extends Component {
 
         this._loaderOperation(false);
 
-        alert('応募が完了しました');
+        alert('応募が完了しました\n受注中のタスクを確認から、タスクを開始してください');
 
-        window.location.reload();
+        this.props.history.push("/myPage/" + this.props.match.params.uid);
     }
 
     gotoMyPage() {

@@ -9,6 +9,7 @@ import HelpMan from '../../img/HelpMan.svg'
 import Work from '../../img/Work.svg';
 import ManAll from '../../img/ManAll.svg';
 import Loader from '../presentational/atoms/Loader';
+import Header from '../presentational/atoms/Header';
 
 const Wrap = styled.div`
     position: relative;
@@ -58,6 +59,16 @@ const ManAllImg = styled.img`
     bottom: 300px;
     right: 0px;
     opacity: .6;
+`;
+
+const Attention = styled.div`
+    font-size: 12px;
+    color: red;
+    margin: 0 auto;
+    margin-top: -20px;
+    margin-bottom: 20px;
+    width: 80%;
+    text-align: left;
 `;
 
 const Mssage = styled.h2`
@@ -222,10 +233,13 @@ class LoginPage extends Component {
                 <WorkImg src={Work} />
                 <ManAllImg src={ManAll} />
 
+                <Header />
+
                 <Mssage>忙しい<Span>時</Span>、暇な<Span>時</Span>から解法します</Mssage>
                 <InputFrom>
                     <Input type="text" placeholder="ユーザーネーム" id='inputUserName'/>
                     <Input type="email" placeholder="メールアドレス" id='inputEmail'/>
+                    <Attention>ユーザー間でのやり取りに使用します。公開されても良いメールアドレスを使用してください。<br />今回はテスト用として---@example.comの使用を推奨します。</Attention>
                     <Input type="password" placeholder="パスワード" id='inputPass'/>
 
                     <MarginS />

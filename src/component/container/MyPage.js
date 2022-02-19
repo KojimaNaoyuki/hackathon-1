@@ -101,6 +101,16 @@ const TaskListWrap = styled.div`
     }
 `;
 
+const Attention = styled.div`
+    font-size: 12px;
+    color: red;
+    margin: 0 auto;
+    margin-top: -10px;
+    margin-bottom: 20px;
+    width: 80%;
+    text-align: left;
+`;
+
 const Back = styled.div`
 `;
 const BackContent = styled.div`
@@ -424,10 +434,11 @@ class MyPage extends Component {
                     <CadeContent className='cade' >
                         <Input type="text" placeholder='タイトル' id='inputTitle' />
                         <Input type="number" placeholder='支払ポイント' id='inputPoint' />
-                        <Input type="number" placeholder='推定時間' id='inputTime' />
+                        <Input type="number" placeholder='推定時間(単位: 時間)' id='inputTime' />
                         <TextBox type="text" placeholder='タスクの詳細' id='inputDetail' />
+                        <Attention>発注すると登録済みメールアドレスが公開されます。</Attention>
 
-                        <Btn text="募集する" clickedFn={this.ordertask.bind(this)} />
+                        <Btn text="発注する" clickedFn={this.ordertask.bind(this)} />
                     </CadeContent>
                 </Cade>
 
